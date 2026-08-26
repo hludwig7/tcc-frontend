@@ -5,6 +5,7 @@ Um dashboard interativo desenvolvido com Streamlit para visualização e otimiza
 ## 📋 Pré-requisitos
 
 Antes de começar, você precisa ter instalado:
+
 - **Python 3.8+** ([Download](https://www.python.org/downloads/))
 - **pip** (gerenciador de pacotes Python)
 - **git** (para controle de versão)
@@ -91,15 +92,6 @@ DEBUG=True
 - O arquivo `requirements.txt` contém todas as dependências necessárias
 - O ambiente virtual (`venv/`) não é versionado no repositório
 - Arquivos de configuração sensíveis (`.env`, credenciais) devem ser adicionados ao `.gitignore`
-
-## 🤝 Contribuindo
-
-Para contribuir com este projeto:
-
-1. Crie uma branch para sua feature (`git checkout -b feature/MinhaFeature`)
-2. Faça commit das suas mudanças (`git commit -m 'Adiciona MinhaFeature'`)
-3. Envie para a branch (`git push origin feature/MinhaFeature`)
-4. Abra um Pull Request
 
 ## 📧 Suporte
 
