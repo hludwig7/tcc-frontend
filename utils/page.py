@@ -55,6 +55,7 @@ class Page:
             page_icon="🗑️"
         )
 
+
     @staticmethod
     def _add_title() -> None:
         st.title("Dashboard")
@@ -90,7 +91,7 @@ class Page:
             },
         )
 
-        st.plotly_chart(fig_bar, use_container_width=True)
+        st.plotly_chart(fig_bar, width="stretch")
 
 
     @staticmethod
@@ -121,7 +122,7 @@ class Page:
         )])
         
         fig_pie.update_layout(height=400)
-        st.plotly_chart(fig_pie, use_container_width=True)
+        st.plotly_chart(fig_pie, width="stretch")
 
 
     @staticmethod
@@ -151,7 +152,7 @@ class Page:
         )])
         
         fig_gauge.update_layout(height=400)
-        st.plotly_chart(fig_gauge, use_container_width=True)
+        st.plotly_chart(fig_gauge, width="stretch")
 
 
     @staticmethod
@@ -170,7 +171,7 @@ class Page:
         fig_hist.update_xaxes(title_text="Nível de Ocupação (%)")
         fig_hist.update_yaxes(title_text="Quantidade de Lixeiras")
 
-        st.plotly_chart(fig_hist, use_container_width=True)
+        st.plotly_chart(fig_hist, width="stretch")
 
 
     def _add_fill_level_box_plot_section(df_sensors : DataFrame) -> None:
@@ -185,7 +186,7 @@ class Page:
             height=400
         )
 
-        st.plotly_chart(fig_box, use_container_width=True)
+        st.plotly_chart(fig_box, width="stretch")
 
 
     @staticmethod
@@ -283,7 +284,7 @@ class Page:
             hovermode="closest"
         )
 
-        st.plotly_chart(fig_map_route, use_container_width=True)
+        st.plotly_chart(fig_map_route, width="stretch")
 
 
     @staticmethod
@@ -324,11 +325,11 @@ class Page:
             hovermode="closest"
         )
 
-        st.plotly_chart(fig_map_bins, use_container_width=True)
+        st.plotly_chart(fig_map_bins, width="stretch")
 
 
     @staticmethod
     def _add_api_data_section(df_sensors : DataFrame) -> None:
         st.subheader("📋 Dados Recebidos da API")
 
-        st.dataframe(df_sensors, use_container_width=True)
+        st.dataframe(df_sensors, width="stretch")
