@@ -2,7 +2,14 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from services.mock_api import get_mock_data
+from services.backend_api_service import BackendApiService
+from services.backend_api_service_impl import BackendApiServiceImpl
+
+# ========================================
+# SETUP DEPENDÊNCIAS
+# ========================================
+
+apiService : BackendApiService = BackendApiServiceImpl()
 
 
 # ========================================
@@ -22,28 +29,19 @@ st.title("🗑️ Dashboard de Lixeira Inteligente")
 # CONSUMO DA API
 # ========================================
 
-payload = get_mock_data()
+route = apiService.get_route()
 
 
 # ========================================
 # EXTRAÇÃO DOS DADOS
 # ========================================
 
-# Coordenadas da rota em ordem
-route_coordinates = payload.get("orderedNodeCoordinates", [])
-
-# Dados de paradas
-stops_data = payload.get("stops", [])
-
-# Dados de sensores com fill level
-sensors_data = payload.get("selectedSensors", [])
-
 # Criar DataFrames
-df_sensors = pd.DataFrame(sensors_data)
-df_stops = pd.DataFrame(stops_data)
+df_sensors = pd.DataFrame(route.orderedSelectedSensors)
+df_stops = pd.DataFrame(route.stops)
 
 # Mapear stopIndex para cada sensor pelo nodeId
-sensor_order_map = {stop["nodeId"]: stop["stopIndex"] for stop in stops_data}
+sensor_order_map = {stop["nodeId"]: stop["stopIndex"] for stop in route.stops}
 df_sensors["collectOrder"] = df_sensors["nodeId"].map(sensor_order_map) + 1
 df_sensors["fillLevel"] = df_sensors["fillLevel"] * 100
 
@@ -60,7 +58,7 @@ df_sensors = df_sensors.sort_values("collectOrder")
 
 st.subheader("📊 Indicadores Operacionais")
 
-critical_bins = df_sensors[df_sensors["fillLevel"] >= 90].shape[0]
+critical_bins = df_sensors[df_sensors["fillLevel"] >= 80].shape[0]
 avg_fill = round(df_sensors["fillLevel"].mean(), 2)
 total_bins = df_sensors.shape[0]
 
@@ -228,8 +226,8 @@ st.plotly_chart(fig_map_bins, use_container_width=True)
 st.subheader("🚚 Rota de Coleta")
 
 # Extrair coordenadas da rota
-route_lons = [coord["longitude"] for coord in route_coordinates]
-route_lats = [coord["latitude"] for coord in route_coordinates]
+route_lons = [coord["longitude"] for coord in route.orderedNodeCoordinates]
+route_lats = [coord["latitude"] for coord in route.orderedNodeCoordinates]
 
 fig_map_route = go.Figure()
 
