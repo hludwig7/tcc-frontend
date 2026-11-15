@@ -2,7 +2,15 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from services.mock_api import get_mock_data
+from services.backend_api_service_mock import BackendApiServiceMock
+from services.backend_api_service import BackendApiService
+from dataclasses import asdict
+
+# ========================================
+# CONFIGURAÇÃO
+# ========================================
+
+apiService : BackendApiService = BackendApiServiceMock()
 
 
 # ========================================
@@ -22,7 +30,7 @@ st.title("🗑️ Dashboard de Lixeira Inteligente")
 # CONSUMO DA API
 # ========================================
 
-payload = get_mock_data()
+payload = asdict(apiService.get_route())
 
 
 # ========================================
