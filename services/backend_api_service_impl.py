@@ -3,7 +3,7 @@ from requests import get
 
 class BackendApiServiceImpl(BackendApiService):
 
-    BACKEND_API_URI_BASE : str = "http://localhost:8081/api";
+    BACKEND_API_URI_BASE : str = "http://backend-api:8081/api";
 
     @staticmethod
     def get_route() -> RouteDto:

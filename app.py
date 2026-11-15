@@ -58,7 +58,7 @@ df_sensors = df_sensors.sort_values("collectOrder")
 
 st.subheader("📊 Indicadores Operacionais")
 
-critical_bins = df_sensors[df_sensors["fillLevel"] >= 90].shape[0]
+critical_bins = df_sensors[df_sensors["fillLevel"] >= 80].shape[0]
 avg_fill = round(df_sensors["fillLevel"].mean(), 2)
 total_bins = df_sensors.shape[0]
 
