@@ -4,7 +4,6 @@ import plotly.express as px
 import plotly.graph_objects as go
 from services.backend_api_service_mock import BackendApiServiceMock
 from services.backend_api_service import BackendApiService
-from dataclasses import asdict
 
 # ========================================
 # CONFIGURAÇÃO
@@ -30,28 +29,19 @@ st.title("🗑️ Dashboard de Lixeira Inteligente")
 # CONSUMO DA API
 # ========================================
 
-payload = asdict(apiService.get_route())
+route = apiService.get_route()
 
 
 # ========================================
 # EXTRAÇÃO DOS DADOS
 # ========================================
 
-# Coordenadas da rota em ordem
-route_coordinates = payload.get("orderedNodeCoordinates", [])
-
-# Dados de paradas
-stops_data = payload.get("stops", [])
-
-# Dados de sensores com fill level
-sensors_data = payload.get("selectedSensors", [])
-
 # Criar DataFrames
-df_sensors = pd.DataFrame(sensors_data)
-df_stops = pd.DataFrame(stops_data)
+df_sensors = pd.DataFrame(route.selectedSensors)
+df_stops = pd.DataFrame(route.stops)
 
 # Mapear stopIndex para cada sensor pelo nodeId
-sensor_order_map = {stop["nodeId"]: stop["stopIndex"] for stop in stops_data}
+sensor_order_map = {stop["nodeId"]: stop["stopIndex"] for stop in route.stops}
 df_sensors["collectOrder"] = df_sensors["nodeId"].map(sensor_order_map) + 1
 df_sensors["fillLevel"] = df_sensors["fillLevel"] * 100
 
@@ -236,8 +226,8 @@ st.plotly_chart(fig_map_bins, use_container_width=True)
 st.subheader("🚚 Rota de Coleta")
 
 # Extrair coordenadas da rota
-route_lons = [coord["longitude"] for coord in route_coordinates]
-route_lats = [coord["latitude"] for coord in route_coordinates]
+route_lons = [coord["longitude"] for coord in route.orderedNodeCoordinates]
+route_lats = [coord["latitude"] for coord in route.orderedNodeCoordinates]
 
 fig_map_route = go.Figure()
 
