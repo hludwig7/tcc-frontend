@@ -7,8 +7,8 @@ class RouteDto:
     depotCoordinates : PositionDto
     orderedNodeCoordinates : list[PositionDto]
     stops : list[RouteStopDto]
-    selectedSensors : list[RouteSensorDto]
-    totalDistance : float
+    orderedSelectedSensors : list[RouteSensorDto]
+    totalDistanceMeters : float
     routeGenerationMs : float
 
 @dataclass

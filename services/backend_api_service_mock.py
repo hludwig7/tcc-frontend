@@ -6,6 +6,7 @@ class BackendApiServiceMock(BackendApiService):
     def get_route() -> RouteDto:
         return RouteDto(**_mockData)
 
+
 _mockData = {
     "depotCoordinates": {
         "latitude": -23.469911597970118,
@@ -90,13 +91,13 @@ _mockData = {
         {"stopIndex": 5, "nodeId": 2447, "position": {"latitude": -23.47028256225712, "longitude": -47.428154211631586}},
         {"stopIndex": 6, "nodeId": 2444, "position": {"latitude": -23.469911597970118, "longitude": -47.42994846017707}}
     ],
-    "selectedSensors": [
+    "orderedSelectedSensors": [
         {"sensorId": 35, "nodeId": 2446, "position": {"latitude": -23.469667164764513, "longitude": -47.429853958892494}, "fillLevel": 0.85, "fillTimestamp": "2026-05-25T22:36:30.4819686Z"},
         {"sensorId": 42, "nodeId": 2451, "position": {"latitude": -23.468992548689872, "longitude": -47.43067109083218}, "fillLevel": 0.8, "fillTimestamp": "2026-05-25T22:36:30.5155467Z"},
         {"sensorId": 43, "nodeId": 2452, "position": {"latitude": -23.469023599609656, "longitude": -47.43082553460173}, "fillLevel": 0.98, "fillTimestamp": "2026-05-25T22:36:30.5322152Z"},
         {"sensorId": 37, "nodeId": 2448, "position": {"latitude": -23.470830702527703, "longitude": -47.428960486124815}, "fillLevel": 0.95, "fillTimestamp": "2026-05-25T22:36:30.5245569Z"},
         {"sensorId": 36, "nodeId": 2447, "position": {"latitude": -23.47028256225712, "longitude": -47.428154211631586}, "fillLevel": 0.9, "fillTimestamp": "2026-05-25T22:36:30.504596Z"}
     ],
-    "totalDistance": 0.008419799718787245,
+    "totalDistanceMeters": 0.008419799718787245,
     "routeGenerationMs": 54.3964
 }

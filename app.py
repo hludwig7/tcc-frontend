@@ -2,14 +2,14 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from services.backend_api_service_mock import BackendApiServiceMock
 from services.backend_api_service import BackendApiService
+from services.backend_api_service_impl import BackendApiServiceImpl
 
 # ========================================
-# CONFIGURAÇÃO
+# SETUP DEPENDÊNCIAS
 # ========================================
 
-apiService : BackendApiService = BackendApiServiceMock()
+apiService : BackendApiService = BackendApiServiceImpl()
 
 
 # ========================================
@@ -37,7 +37,7 @@ route = apiService.get_route()
 # ========================================
 
 # Criar DataFrames
-df_sensors = pd.DataFrame(route.selectedSensors)
+df_sensors = pd.DataFrame(route.orderedSelectedSensors)
 df_stops = pd.DataFrame(route.stops)
 
 # Mapear stopIndex para cada sensor pelo nodeId
