@@ -7,6 +7,6 @@ class BackendApiServiceImpl(BackendApiService):
 
     @staticmethod
     def get_route() -> RouteDto:
-        response = get(f"{BackendApiServiceImpl.BACKEND_API_URI_BASE}/routes/collection?depotLatitude=-23.5624815&depotLongitude=-47.4632536")
+        response = get(f"{BackendApiServiceImpl.BACKEND_API_URI_BASE}/routes/collection")
         return RouteDto(**response.json())
     
