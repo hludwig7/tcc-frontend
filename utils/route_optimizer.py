@@ -1,7 +1,7 @@
-import pandas as pd
+from pandas import DataFrame
 
 
-def optimize_route(df):
+def optimize_route(df : DataFrame) -> DataFrame:
     """
     Ordena as lixeiras mais críticas.
     MVP simples:
