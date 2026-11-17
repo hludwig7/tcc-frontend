@@ -1,35 +1,57 @@
-from dataclasses import dataclass
-from services.backend_api_service import RouteDto
-from pandas import DataFrame
-import streamlit as st
+import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-import pandas as pd
+import streamlit as st
+from dataclasses import dataclass
+from pandas import DataFrame
+from services.backend_api_service import RouteDto, SensorDto
+from statistics import mean
 
 
 @dataclass
-class PageData:
-    route : RouteDto
-    df_sensors : DataFrame
-    df_stops : DataFrame
-    avg_fill : float
+class PageRouteData:
+    route: RouteDto
+    df_sensors: DataFrame
+    df_stops: DataFrame
 
     @staticmethod
-    def from_route(route : RouteDto) -> PageData:
+    def from_route(route : RouteDto) -> PageRouteData:
         sensor_order_map = {stop["nodeId"]: stop["stopIndex"] for stop in route.stops}
 
-        df_sensors = pd.DataFrame(route.orderedSelectedSensors)
+        df_sensors = DataFrame(route.orderedSelectedSensors)
         df_sensors["collectOrder"] = df_sensors["nodeId"].map(sensor_order_map) + 1
         df_sensors["fillLevel"] = df_sensors["fillLevel"] * 100
         df_sensors[["latitude", "longitude"]] = pd.json_normalize(df_sensors["position"])[["latitude", "longitude"]]
         df_sensors = df_sensors.sort_values("collectOrder")
 
-        avg_fill = round(df_sensors["fillLevel"].mean(), 2)
-
-        df_stops = pd.DataFrame(route.stops)
+        df_stops = DataFrame(route.stops)
         df_stops[["latitude", "longitude"]] = pd.json_normalize(df_stops["position"])[["latitude", "longitude"]]
 
-        return PageData(route, df_sensors, df_stops, avg_fill)
+        return PageRouteData(route, df_sensors, df_stops)
+
+
+@dataclass
+class PageSensorData:
+    sensors : list[SensorDto]
+    avg_fill : float
+
+    @staticmethod
+    def from_sensors(sensors : list[SensorDto]) -> PageSensorData:
+        avg_fill = sum([sensor.health.latestFillLevel * 100 for sensor in sensors if sensor.health.latestFillLevel is not None]) / len(sensors)
+        return PageSensorData(sensors, avg_fill)
+
+
+@dataclass
+class PageData:
+    route_data : PageRouteData
+    sensor_data: PageSensorData
+
+    @staticmethod
+    def from_route(route : RouteDto) -> PageData:
+
+        pageRouteData = PageRouteData.from_route(route)
+
+        return PageData(pageRouteData)
 
 
 class Page:
@@ -43,9 +65,10 @@ class Page:
         # Page._add_fill_metrics_section(data.avg_fill, data.df_sensors)
         # Page._add_fill_level_histogram_section(data.df_sensors)
         # Page._add_fill_level_box_plot_section(data.df_sensors)
-        Page._add_route_plot_section(data.route, data.df_sensors, data.df_stops)
-        Page._add_sensors_plot_section(data.df_sensors, data.df_stops)
+        Page._add_route_plot_section(data.route_data.route, data.route_data.df_sensors, data.route_data.df_stops)
+        Page._add_sensors_plot_section(data.sensor_data)
         # Page._add_api_data_section(data.df_sensors)
+
 
     @staticmethod
     def init_page() -> None:
@@ -288,37 +311,53 @@ class Page:
 
 
     @staticmethod
-    def _add_sensors_plot_section(df_sensors : DataFrame, df_stops : DataFrame) -> None:
+    def _add_sensors_plot_section(sensorData : PageSensorData) -> None:
         st.subheader("Mapa dos Pontos de Coleta")
 
         fig_map_bins = go.Figure()
 
-    # Sensores com destaque em cores
+        active_sensors = [
+            sensor
+            for sensor
+            in sensorData.sensors
+            if
+                sensor.isActive and
+                sensor.health is not None and sensor.health.isAlive
+        ] 
+
         fig_map_bins.add_trace(go.Scattermapbox(
             mode="markers+text",
-            lon=df_sensors["longitude"],
-            lat=df_sensors["latitude"],
+            lon=[ sensor.nodeLongitude for sensor in active_sensors ],
+            lat=[ sensor.nodeLatitude for sensor in active_sensors ],
             marker={
                 "size": 18,
-                "color": df_sensors["fillLevel"],
+                "color": [
+                    sensor.health.latestFillLevel
+                    if (
+                        (sensor.health is not None) and
+                        (sensor.health.latestFillLevel is not None)
+                    )
+                    else -1
+                    for sensor
+                    in active_sensors
+                ],
                 "colorscale": "RdYlGn_r",
                 "showscale": True,
                 "opacity": 0.95
             },
-            text=[f"{order}" 
-                for order in zip(df_stops["stopIndex"])],
+            text=[ f"{sensor.id}" for sensor in active_sensors ],
             textposition="top center",
             textfont={"size": 16, "color": "white"},
             hovertemplate="<b>%{text}</b><extra></extra>",
-            name="Lixeiras"
+            name="Lixeiras Monitoradas"
         ))
 
         fig_map_bins.update_layout(
             mapbox_style="open-street-map",
             mapbox_zoom=15,
             mapbox_center={
-                "lat": df_sensors["latitude"].mean(),
-                "lon": df_sensors["longitude"].mean(),
+                "lat": mean([ sensor.nodeLatitude for sensor in active_sensors if sensor.nodeLatitude is not None ]),
+                "lon": mean([ sensor.nodeLongitude for sensor in active_sensors if sensor.nodeLongitude is not None ]),
             },  
             height=600,
             margin={"r":0,"t":0,"l":0,"b":0},
